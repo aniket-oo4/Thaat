@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Order | THAAT</title>
+    <meta name="description" content="Track your THAAT order status in real-time. Enter your phone number to see all your orders.">
+    <link rel="icon" type="image/jpeg" href="./assets/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #1a1a2e; --navy-l: #16213e; --gold: #c9a84c; --gold-l: #d4b95e;
+            --white: #ffffff; --bg: #f5f5f7;
+            --g100: #f0f0f2; --g200: #e0e0e4; --g300: #c0c0c8; --g400: #8a8a9a; --g500: #5a5a6e;
+            --red: #e74c3c; --green: #27ae60; --blue: #3498db; --orange: #e17055;
+            --ff: 'Inter', -apple-system, sans-serif;
+            --ff-d: 'Playfair Display', serif;
+            --ff-mr: 'Noto Sans Devanagari', sans-serif;
+            --radius: 12px; --radius-sm: 8px;
+            --shadow: 0 2px 12px rgba(0,0,0,.06);
+            --shadow-lg: 0 8px 30px rgba(0,0,0,.1);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--ff); background: var(--bg); color: var(--g500); min-height: 100vh; }
+        a { color: var(--gold); text-decoration: none; }
+
+        /* Header */
+        .track-header {
+            background: var(--navy); padding: 1.5rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .track-header__brand { display: flex; align-items: center; gap: .75rem; }
+        .track-header__logo { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+        .track-header__title { font-family: var(--ff-d); color: var(--gold); font-size: 1.3rem; font-weight: 700; letter-spacing: 2px; }
+        .track-header__back { color: var(--g300); font-size: .9rem; transition: color .2s; }
+        .track-header__back:hover { color: var(--white); }
+
+        /* Hero */
+        .track-hero {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-l) 100%);
+            padding: 3rem 2rem 4rem; text-align: center;
+        }
+        .track-hero h1 { font-family: var(--ff-d); color: var(--white); font-size: 2rem; margin-bottom: .5rem; }
+        .track-hero p { color: var(--g300); font-size: .95rem; margin-bottom: 2rem; }
+        .track-hero .marathi { font-family: var(--ff-mr); color: var(--gold); font-size: 1rem; margin-bottom: 1.5rem; }
+
+        /* Search Box */
+        .track-search {
+            max-width: 500px; margin: 0 auto; display: flex; gap: .5rem;
+        }
+        .track-search input {
+            flex: 1; padding: .85rem 1.25rem;
+            border: 2px solid rgba(201,168,76,.3); border-radius: var(--radius);
+            background: rgba(255,255,255,.08); color: var(--white);
+            font: inherit; font-size: 1rem;
+            transition: border-color .2s;
+        }
+        .track-search input::placeholder { color: var(--g400); }
+        .track-search input:focus { outline: none; border-color: var(--gold); }
+        .track-search button {
+            padding: .85rem 1.75rem; border: none; border-radius: var(--radius);
+            background: var(--gold); color: var(--navy);
+            font: inherit; font-weight: 700; font-size: .95rem;
+            cursor: pointer; transition: all .2s;
+        }
+        .track-search button:hover { background: var(--gold-l); transform: translateY(-1px); }
+        .track-error { color: var(--red); font-size: .85rem; margin-top: .75rem; }
+
+        /* Results */
+        .track-results { max-width: 800px; margin: -2rem auto 3rem; padding: 0 1.5rem; }
+        .track-empty { text-align: center; padding: 3rem; color: var(--g400); }
+
+        /* Order Card */
+        .order-card {
+            background: var(--white); border-radius: var(--radius);
+            padding: 1.75rem; margin-bottom: 1.25rem;
+            box-shadow: var(--shadow); transition: box-shadow .2s;
+        }
+        .order-card:hover { box-shadow: var(--shadow-lg); }
+        .order-card__header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1rem; padding-bottom: .75rem;
+            border-bottom: 1px solid var(--g100);
+        }
+        .order-card__id { font-family: var(--ff-d); font-weight: 700; color: var(--navy); font-size: 1.1rem; }
+        .order-card__date { font-size: .8rem; color: var(--g400); }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .35rem .9rem; border-radius: 99px;
+            font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
+        }
+        .status-badge--pending { background: #ffeaa7; color: var(--orange); }
+        .status-badge--confirmed { background: #dfe6e9; color: #2d3436; }
+        .status-badge--shipped { background: #74b9ff; color: #0984e3; }
+        .status-badge--delivered { background: #55efc4; color: #00b894; }
+        .status-badge--cancelled { background: #fab1a0; color: var(--red); }
+
+        /* Timeline */
+        .timeline { display: flex; justify-content: space-between; margin: 1.5rem 0; position: relative; }
+        .timeline::before {
+            content: ''; position: absolute; top: 16px; left: 40px; right: 40px;
+            height: 3px; background: var(--g200); z-index: 0;
+        }
+        .timeline__step {
+            display: flex; flex-direction: column; align-items: center; gap: .5rem;
+            position: relative; z-index: 1; flex: 1;
+        }
+        .timeline__dot {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; background: var(--g100); color: var(--g400);
+            border: 3px solid var(--g200); transition: all .3s;
+        }
+        .timeline__step.active .timeline__dot {
+            background: var(--gold); color: var(--navy); border-color: var(--gold);
+            box-shadow: 0 0 0 4px rgba(201,168,76,.2);
+        }
+        .timeline__step.completed .timeline__dot {
+            background: var(--green); color: var(--white); border-color: var(--green);
+        }
+        .timeline__label { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--g400); }
+        .timeline__step.active .timeline__label, .timeline__step.completed .timeline__label { color: var(--navy); }
+
+        /* Order Items */
+        .order-card__items { margin-top: 1rem; }
+        .order-card__item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: .5rem 0; border-bottom: 1px solid var(--g100);
+            font-size: .9rem;
+        }
+        .order-card__item:last-child { border-bottom: none; }
+        .order-card__total {
+            display: flex; justify-content: space-between;
+            margin-top: .75rem; padding-top: .75rem;
+            border-top: 2px solid var(--navy);
+            font-weight: 700; font-size: 1.05rem; color: var(--navy);
+        }
+        .order-card__address {
+            margin-top: 1rem; padding: .75rem 1rem;
+            background: var(--g100); border-radius: var(--radius-sm);
+            font-size: .85rem; color: var(--g500);
+        }
+        .order-card__address strong { color: var(--navy); }
+
+        /* Footer */
+        .track-footer {
+            text-align: center; padding: 2rem;
+            background: var(--navy); color: var(--g400); font-size: .85rem;
+        }
+        .track-footer a { color: var(--gold); }
+
+        @media (max-width: 600px) {
+            .track-hero h1 { font-size: 1.5rem; }
+            .track-search { flex-direction: column; }
+            .timeline__label { font-size: .6rem; }
+            .timeline__dot { width: 28px; height: 28px; font-size: .8rem; }
+            .order-card { padding: 1.25rem; }
+            .track-header { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header class="track-header">
+        <div class="track-header__brand">
+            <img src="./assets/logo.jpg" alt="THAAT" class="track-header__logo" onerror="this.style.display='none'">
+            <span class="track-header__title">THAAT</span>
+        </div>
+        <a href="./index.html" class="track-header__back">← Back to Store</a>
+    </header>
+
+    <section class="track-hero">
+        <p class="marathi">ऑर्डर ट्रॅक करा — तुमचा THAAT, तुमचा स्टाइल 🚚</p>
+        <h1>Track Your Order</h1>
+        <p>Enter your phone number to see all your orders and their current status.</p>
+        <div class="track-search">
+            <input type="tel" id="trackPhone" placeholder="Enter your 10-digit phone number" maxlength="10" pattern="[6-9]\d{9}">
+            <button id="trackBtn">Track</button>
+        </div>
+        <p class="track-error" id="trackError"></p>
+    </section>
+
+    <section class="track-results" id="trackResults"></section>
+
+    <footer class="track-footer">
+        <p>Need help? <a href="https://wa.me/919876543210" target="_blank">Chat on WhatsApp</a> · <a href="./index.html">Back to Store</a></p>
+        <p style="margin-top:.5rem">© 2024 THAAT. All rights reserved.</p>
+    </footer>
+
+    <script>
+    'use strict';
+    const STATUSES = ['Pending', 'Confirmed', 'Shipped', 'Delivered'];
+    const STATUS_ICONS = { Pending: '🕐', Confirmed: '✅', Shipped: '🚚', Delivered: '📦', Cancelled: '❌' };
+
+    document.getElementById('trackBtn').addEventListener('click', searchOrders);
+    document.getElementById('trackPhone').addEventListener('keydown', e => { if (e.key === 'Enter') searchOrders(); });
+
+    function searchOrders() {
+        const phone = document.getElementById('trackPhone').value.trim();
+        const error = document.getElementById('trackError');
+        const results = document.getElementById('trackResults');
+        error.textContent = '';
+
+        if (!/^[6-9]\d{9}$/.test(phone)) {
+            error.textContent = 'Please enter a valid 10-digit Indian mobile number.';
+            return;
+        }
+
+        let orders = [];
+        try {
+            orders = JSON.parse(localStorage.getItem('thaat_orders') || '[]');
+        } catch {}
+
+        const matched = orders.filter(o => o.phone === phone);
+
+        if (!matched.length) {
+            results.innerHTML = `
+                <div class="track-empty">
+                    <div style="font-size:3rem;margin-bottom:1rem">📭</div>
+                    <p style="font-size:1.1rem;font-weight:600;color:var(--navy)">No orders found</p>
+                    <p style="margin-top:.5rem">No orders found for phone number <strong>${phone}</strong></p>
+                    <p style="margin-top:.75rem;font-family:var(--ff-mr);color:var(--gold)">अजून ऑर्डर केलं नाही? चला शॉपिंग करूया!</p>
+                    <a href="./index.html#collections" style="display:inline-block;margin-top:1rem;padding:.6rem 1.5rem;background:var(--gold);color:var(--navy);border-radius:var(--radius-sm);font-weight:700">Shop Now</a>
+                </div>`;
+            return;
+        }
+
+        results.innerHTML = `<h3 style="font-family:var(--ff-d);color:var(--navy);margin-bottom:1rem;font-size:1.1rem">${matched.length} order(s) found for ${phone}</h3>` +
+            matched.map(o => renderOrderCard(o)).join('');
+    }
+
+    function renderOrderCard(order) {
+        const statusIdx = order.status === 'Cancelled' ? -1 : STATUSES.indexOf(order.status || 'Pending');
+
+        const timelineHtml = STATUSES.map((s, i) => {
+            let cls = '';
+            if (statusIdx < 0) cls = ''; // cancelled
+            else if (i < statusIdx) cls = 'completed';
+            else if (i === statusIdx) cls = 'active';
+            return `
+                <div class="timeline__step ${cls}">
+                    <div class="timeline__dot">${STATUS_ICONS[s]}</div>
+                    <span class="timeline__label">${s}</span>
+                </div>`;
+        }).join('');
+
+        const itemsHtml = (order.items || []).map(it => `
+            <div class="order-card__item">
+                <span>${esc(it.name)} (${it.size}) × ${it.qty}</span>
+                <span>₹${(it.price * it.qty).toLocaleString('en-IN')}</span>
+            </div>
+        `).join('');
+
+        const date = order.date ? new Date(order.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '—';
+
+        return `
+        <div class="order-card">
+            <div class="order-card__header">
+                <div>
+                    <div class="order-card__id">${esc(order.id || '')}</div>
+                    <div class="order-card__date">${date}</div>
+                </div>
+                <span class="status-badge status-badge--${(order.status || 'pending').toLowerCase()}">
+                    ${STATUS_ICONS[order.status || 'Pending']} ${order.status || 'Pending'}
+                </span>
+            </div>
+
+            ${order.status !== 'Cancelled' ? `<div class="timeline">${timelineHtml}</div>` : '<p style="text-align:center;color:var(--red);font-weight:600;padding:1rem">❌ This order was cancelled</p>'}
+
+            <div class="order-card__items">
+                ${itemsHtml}
+                <div class="order-card__total">
+                    <span>Total</span>
+                    <span>₹${(order.total || 0).toLocaleString('en-IN')}</span>
+                </div>
+            </div>
+
+            ${order.address ? `<div class="order-card__address"><strong>📍 Delivery Address:</strong> ${esc(order.address)}</div>` : ''}
+        </div>`;
+    }
+
+    function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+    </script>
+</body>
+</html>

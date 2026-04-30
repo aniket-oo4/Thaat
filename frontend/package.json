@@ -1,0 +1,22 @@
+{
+  "name": "thaat20-frontend",
+  "version": "1.0.0",
+  "description": "THAAT - The Perfect Men's Wear | Premium Clothing Brand",
+  "scripts": {
+    "dev": "npx live-server --port=3000",
+    "build": "echo 'Static site - no build required'",
+    "preview": "npx serve ."
+  },
+  "keywords": [
+    "thaat",
+    "mens wear",
+    "clothing",
+    "shirts",
+    "jeans",
+    "footwear",
+    "india",
+    "fashion"
+  ],
+  "author": "THAAT",
+  "license": "MIT"
+}

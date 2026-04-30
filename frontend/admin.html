@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>THAAT Admin Panel</title>
+    <link rel="icon" type="image/jpeg" href="./assets/logo.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/admin.css">
+</head>
+<body>
+    <!-- ── Sidebar ─────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar__brand">
+            <img src="./assets/logo.jpg" alt="THAAT" class="sidebar__logo" onerror="this.style.display='none'">
+            <div>
+                <h1 class="sidebar__title">THAAT</h1>
+                <p class="sidebar__tag">Admin Panel</p>
+            </div>
+        </div>
+        <nav class="sidebar__nav">
+            <button class="sidebar__link active" data-tab="dashboard">
+                <span class="sidebar__icon">📊</span> Dashboard
+            </button>
+            <button class="sidebar__link" data-tab="products">
+                <span class="sidebar__icon">📦</span> Products
+            </button>
+            <button class="sidebar__link" data-tab="orders">
+                <span class="sidebar__icon">🛒</span> Orders
+            </button>
+            <button class="sidebar__link" data-tab="reviews">
+                <span class="sidebar__icon">⭐</span> Reviews
+            </button>
+            <button class="sidebar__link" data-tab="settings">
+                <span class="sidebar__icon">⚙️</span> Settings
+            </button>
+        </nav>
+        <div class="sidebar__footer">
+            <a href="./index.html" class="sidebar__link">
+                <span class="sidebar__icon">🏠</span> Back to Store
+            </a>
+        </div>
+    </aside>
+
+    <!-- ── Main Content ────────────────── -->
+    <main class="main">
+        <header class="topbar">
+            <button class="topbar__toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+            <h2 class="topbar__title" id="pageTitle">Dashboard</h2>
+            <div class="topbar__actions">
+                <span class="topbar__greeting" id="greeting">Welcome, Admin</span>
+                <button class="btn btn--sm btn--outline" id="logoutBtn">Logout</button>
+            </div>
+        </header>
+
+        <!-- Dashboard Tab -->
+        <section class="tab-content active" id="tab-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card__icon">📦</div>
+                    <div class="stat-card__info">
+                        <div class="stat-card__num" id="statProducts">0</div>
+                        <div class="stat-card__label">Products</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__icon">🛒</div>
+                    <div class="stat-card__info">
+                        <div class="stat-card__num" id="statOrders">0</div>
+                        <div class="stat-card__label">Orders</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__icon">💰</div>
+                    <div class="stat-card__info">
+                        <div class="stat-card__num" id="statRevenue">₹0</div>
+                        <div class="stat-card__label">Revenue</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__icon">⭐</div>
+                    <div class="stat-card__info">
+                        <div class="stat-card__num" id="statReviews">0</div>
+                        <div class="stat-card__label">Reviews</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:1.5rem">
+                <h3 class="card__title">Recent Orders</h3>
+                <div class="table-wrap">
+                    <table class="table" id="recentOrdersTable">
+                        <thead>
+                            <tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Date</th></tr>
+                        </thead>
+                        <tbody id="recentOrdersBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Tab -->
+        <section class="tab-content" id="tab-products">
+            <div class="tab-header">
+                <h3>Manage Products</h3>
+                <button class="btn btn--primary btn--sm" id="addProductBtn">+ Add Product</button>
+            </div>
+
+            <!-- Product Form -->
+            <div class="card form-card" id="productFormCard" style="display:none">
+                <h4 class="card__title" id="productFormTitle">Add Product</h4>
+                <form id="productForm" novalidate>
+                    <input type="hidden" id="productEditId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prodName">Product Name *</label>
+                            <input type="text" id="prodName" required maxlength="100" placeholder="e.g. Classic Oxford Shirt">
+                            <span class="field-error" id="prodNameError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="prodCategory">Category *</label>
+                            <select id="prodCategory" required>
+                                <option value="">Select category</option>
+                                <option value="shirts">Shirts</option>
+                                <option value="jeans">Jeans</option>
+                                <option value="footwear">Footwear</option>
+                                <option value="accessories">Accessories</option>
+                            </select>
+                            <span class="field-error" id="prodCategoryError"></span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="prodPrice">Price (₹) *</label>
+                            <input type="number" id="prodPrice" required min="1" step="1" placeholder="1299">
+                            <span class="field-error" id="prodPriceError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="prodOriginalPrice">Original Price (₹)</label>
+                            <input type="number" id="prodOriginalPrice" min="0" step="1" placeholder="1899 (optional)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="prodDescription">Description</label>
+                        <textarea id="prodDescription" rows="3" maxlength="500" placeholder="Product description..."></textarea>
+                    </div>
+                    <!-- Image upload widget -->
+                    <div class="form-group">
+                        <label>Product Image</label>
+                        <div class="img-upload">
+                            <!-- Tabs -->
+                            <div class="img-upload__tabs">
+                                <button type="button" class="img-upload__tab active" data-tab="file">📁 Upload File</button>
+                                <button type="button" class="img-upload__tab" data-tab="url">🔗 Image URL</button>
+                            </div>
+                            <!-- File panel -->
+                            <div class="img-upload__panel active" id="imgPanelFile">
+                                <label class="img-upload__dropzone" id="imgDropzone" for="prodImageFile">
+                                    <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    <span class="img-upload__drop-text">Click or drag &amp; drop an image</span>
+                                    <span class="img-upload__drop-hint">JPG, PNG, WEBP · Max 2 MB</span>
+                                    <input type="file" id="prodImageFile" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none">
+                                </label>
+                            </div>
+                            <!-- URL panel -->
+                            <div class="img-upload__panel" id="imgPanelUrl">
+                                <input type="url" id="prodImageUrl" placeholder="https://example.com/product.jpg" class="img-upload__url-input">
+                            </div>
+                            <!-- Preview -->
+                            <div class="img-upload__preview" id="imgPreview" style="display:none">
+                                <img id="imgPreviewImg" src="" alt="Preview">
+                                <button type="button" class="img-upload__remove" id="imgRemove" title="Remove image">&times;</button>
+                            </div>
+                        </div>
+                        <!-- hidden field holds final value (base64 or url) -->
+                        <input type="hidden" id="prodImage">
+                    </div>
+                    <div class="form-group">
+                        <label for="prodSizes">Sizes (comma separated) *</label>
+                        <input type="text" id="prodSizes" required placeholder="S, M, L, XL">
+                        <span class="field-error" id="prodSizesError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="prodBadge">Badge</label>
+                        <select id="prodBadge">
+                            <option value="">None</option>
+                            <option value="new">New</option>
+                            <option value="sale">Sale</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn--primary">Save Product</button>
+                        <button type="button" class="btn btn--outline" id="cancelProductForm">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table class="table" id="productsTable">
+                        <thead>
+                            <tr><th>Name</th><th>Category</th><th>Price</th><th>Sizes</th><th>Badge</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="productsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Orders Tab -->
+        <section class="tab-content" id="tab-orders">
+            <div class="tab-header">
+                <h3>All Orders</h3>
+                <span class="tab-header__count" id="ordersCount">0 orders</span>
+            </div>
+            <div class="card">
+                <div class="table-wrap">
+                    <table class="table" id="ordersTable">
+                        <thead>
+                            <tr><th>Order ID</th><th>Customer</th><th>Phone</th><th>Items</th><th>Total</th><th>Payment</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="ordersBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reviews Tab -->
+        <section class="tab-content" id="tab-reviews">
+            <div class="tab-header">
+                <h3>Manage Reviews</h3>
+                <button class="btn btn--primary btn--sm" id="addReviewBtn">+ Add Review</button>
+            </div>
+
+            <div class="card form-card" id="reviewFormCard" style="display:none">
+                <h4 class="card__title">Add Review</h4>
+                <form id="reviewForm" novalidate>
+                    <input type="hidden" id="reviewEditIdx">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="revName">Reviewer Name *</label>
+                            <input type="text" id="revName" required maxlength="50" placeholder="Customer name">
+                            <span class="field-error" id="revNameError"></span>
+                        </div>
+                        <div class="form-group">
+                            <label for="revLocation">Location *</label>
+                            <input type="text" id="revLocation" required maxlength="50" placeholder="City">
+                            <span class="field-error" id="revLocationError"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="revText">Review Text *</label>
+                        <textarea id="revText" rows="3" required maxlength="500" placeholder="Customer review..."></textarea>
+                        <span class="field-error" id="revTextError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="revRating">Rating (1-5) *</label>
+                        <input type="number" id="revRating" required min="1" max="5" value="5">
+                        <span class="field-error" id="revRatingError"></span>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn--primary">Save Review</button>
+                        <button type="button" class="btn btn--outline" id="cancelReviewForm">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="table-wrap">
+                    <table class="table" id="reviewsTable">
+                        <thead>
+                            <tr><th>Name</th><th>Location</th><th>Rating</th><th>Text</th><th>Active</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="reviewsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings Tab -->
+        <section class="tab-content" id="tab-settings">
+            <h3>Settings</h3>
+            <div class="card">
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label for="setWhatsApp">WhatsApp Number</label>
+                        <input type="text" id="setWhatsApp" placeholder="919876543210">
+                        <span class="field-error" id="setWhatsAppError"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="setApiUrl">Backend API URL</label>
+                        <input type="url" id="setApiUrl" placeholder="https://thaat-api.onrender.com/api">
+                    </div>
+                    <div class="form-group">
+                        <label for="setStoreName">Store Name</label>
+                        <input type="text" id="setStoreName" placeholder="THAAT" maxlength="50">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn--primary">Save Settings</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card" style="margin-top:1.5rem">
+                <h4 class="card__title">Data Management</h4>
+                <div style="display:flex;gap:1rem;flex-wrap:wrap">
+                    <button class="btn btn--outline btn--sm" id="exportData">📥 Export All Data</button>
+                    <button class="btn btn--outline btn--sm" id="importData">📤 Import Data</button>
+                    <button class="btn btn--sm" style="background:#e74c3c;color:#fff" id="clearData">🗑️ Clear All Data</button>
+                </div>
+                <input type="file" id="importFile" accept=".json" style="display:none">
+            </div>
+        </section>
+    </main>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal__content">
+            <img src="./assets/logo.jpg" alt="THAAT" class="modal__logo" onerror="this.style.display='none'">
+            <h2 class="modal__title">THAAT Admin</h2>
+            <p class="modal__subtitle">Enter password to continue</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="Admin Password" required autocomplete="current-password">
+                    <span class="field-error" id="loginError"></span>
+                </div>
+                <button type="submit" class="btn btn--primary" style="width:100%">Login</button>
+            </form>
+            <p style="margin-top:1rem;font-size:.75rem;color:var(--g400)">Default: thaat@admin</p>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="./js/admin.js"></script>
+</body>
+</html>
